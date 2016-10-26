@@ -86,7 +86,6 @@
 
             <TreeView x:Name="ServerTreeView"
                       Margin="0,0,0,6"
-                      localWpf:TreeViewHelper.SelectedItem="{Binding State.SelectedProject, Mode=TwoWay}"
                       ItemContainerStyle="{StaticResource SQServerTreeViewItemStyle}"
                       ItemsSource="{Binding State.ConnectedServers}"
                       Style="{StaticResource SQTreeViewStyle}">

@@ -252,8 +252,8 @@ namespace SonarLint.VisualStudio.Integration.State
             if (projecAndMatchCountTuples.Any())
             {
                 // Then, we fold them to obtain the tuple with the highest count, on which we take the project.
-                this.ManagedState.SelectedProject = projecAndMatchCountTuples.Aggregate((left, right) => left.MatchCount > right.MatchCount ? left : right)
-                                                                             .Project;
+                var AMAURY = projecAndMatchCountTuples.Aggregate((left, right) => left.MatchCount > right.MatchCount ? left : right).Project;
+                // TODO: So something!!!!!
             }
         }
 

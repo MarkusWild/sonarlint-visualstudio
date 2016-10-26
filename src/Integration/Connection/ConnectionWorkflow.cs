@@ -108,6 +108,7 @@ namespace SonarLint.VisualStudio.Integration.Connection
 
             notifications.ProgressChanged(connection.ServerUri.ToString());
 
+            notifications.ProgressChanged(Strings.DetectingServerPlugins);
             if (!this.VerifyDotNetPlugins(controller, cancellationToken, connection, notifications))
             {
                 return;
@@ -115,6 +116,7 @@ namespace SonarLint.VisualStudio.Integration.Connection
 
             this.ConnectedServer = connection;
 
+            notifications.ProgressChanged(Strings.DetectingServerProjects);
             ProjectInformation[] projects;
             if (!this.host.SonarQubeService.TryGetProjects(connection, cancellationToken, out projects))
             {
@@ -179,8 +181,6 @@ namespace SonarLint.VisualStudio.Integration.Connection
 
         private bool VerifyDotNetPlugins(IProgressController controller, CancellationToken cancellationToken, ConnectionInformation connection, IProgressStepExecutionEvents notifications)
         {
-            notifications.ProgressChanged(Strings.DetectingServerPlugins);
-
             ServerPlugin[] plugins;
             if (!this.host.SonarQubeService.TryGetPlugins(connection, cancellationToken, out plugins))
             {

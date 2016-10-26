@@ -9,8 +9,6 @@ using SonarLint.VisualStudio.Integration.Resources;
 using SonarLint.VisualStudio.Integration.Service;
 using SonarLint.VisualStudio.Integration.WPF;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace SonarLint.VisualStudio.Integration.TeamExplorer
@@ -19,6 +17,7 @@ namespace SonarLint.VisualStudio.Integration.TeamExplorer
     {
         private readonly ContextualCommandsCollection commands = new ContextualCommandsCollection();
         private bool isBound;
+        private bool isSelected;
 
         // Ordinal comparer should be good enough: http://docs.sonarqube.org/display/SONAR/Project+Administration#ProjectAdministration-AddingaProject
         public static readonly StringComparer KeyComparer = StringComparer.Ordinal;
@@ -92,6 +91,12 @@ namespace SonarLint.VisualStudio.Integration.TeamExplorer
                     ? string.Format(CultureInfo.CurrentCulture, Strings.AutomationProjectBoundDescription, this.ProjectName)
                     : this.ProjectName;
             }
+        }
+
+        public bool IsSelected
+        {
+            get { return this.isSelected; }
+            set { SetAndRaisePropertyChanged(ref this.isSelected, value); }
         }
 
         #endregion

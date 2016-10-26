@@ -386,6 +386,15 @@ namespace SonarLint.VisualStudio.Integration.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Detecting server projects.
+        /// </summary>
+        public static string DetectingServerProjects {
+            get {
+                return ResourceManager.GetString("DetectingServerProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disconnect.
         /// </summary>
         public static string DisconnectCommandDisplayText {
@@ -680,6 +689,15 @@ namespace SonarLint.VisualStudio.Integration.Resources {
         public static string NotEmptyValidatorRequiredField {
             get {
                 return ResourceManager.GetString("NotEmptyValidatorRequiredField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found {0} server projects..
+        /// </summary>
+        public static string NumberOfServerProjectsFoundMessageFormat {
+            get {
+                return ResourceManager.GetString("NumberOfServerProjectsFoundMessageFormat", resourceCulture);
             }
         }
         

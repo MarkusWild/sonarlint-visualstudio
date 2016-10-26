@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace SonarLint.VisualStudio.Integration.Service
 {
-    [DebuggerDisplay("PageIndex: {PageIndex}, PageSize: {PageSize}, PageCount: {PageCount}")]
+    [DebuggerDisplay("PageIndex: {PageIndex}, PageSize: {PageSize}, TotalCount: {TotalCount}")]
     internal class Paging
     {
         [JsonProperty("pageIndex")]
@@ -20,6 +20,6 @@ namespace SonarLint.VisualStudio.Integration.Service
         public int PageSize { get; set; }
 
         [JsonProperty("total")]
-        public int PageCount { get; set; }
+        public int TotalCount { get; set; }
     }
 }

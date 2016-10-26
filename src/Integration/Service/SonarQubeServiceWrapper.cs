@@ -89,15 +89,20 @@ namespace SonarLint.VisualStudio.Integration.Service
             serverProjects = this.SafeUseHttpClient<ProjectInformation[]>(connectionInformation,
                 client => this.DownloadProjects(client, token));
 
+            var message = string.Format(Strings.NumberOfServerProjectsFoundMessageFormat, serverProjects?.Length ?? 0);
+            VsShellUtils.WriteToSonarLintOutputPane(this.serviceProvider, Strings.SubTextPaddingFormat, message);
+
             if (serverProjects == null)
             {
                 return false;
             }
 
-            foreach (var project in serverProjects)
-            {
-                project.Components = this.SafeUseHttpClient(connectionInformation, client => this.DownloadProjectComponents(client, token, project.Key));
-            }
+            var watch = new Stopwatch();
+            watch.Start();
+            Parallel.ForEach(serverProjects, project =>
+                project.Components = this.SafeUseHttpClient(connectionInformation, client => this.DownloadProjectComponents(client, token, project.Key)));
+            watch.Stop();
+            VsShellUtils.WriteToSonarLintOutputPane(this.serviceProvider, $"Downloaded all components in {watch.Elapsed.ToString(@"mm\:ss\.ff")}");
 
             return true;
         }
@@ -233,6 +238,7 @@ namespace SonarLint.VisualStudio.Integration.Service
         {
             const int maxPageSize = 500;
             const string subProjectsQualifier = "BRC";
+            const string strategy = "children";
 
             var allProjectComponents = new List<ComponentInformation>();
             var pageIndex = 0;
@@ -240,13 +246,12 @@ namespace SonarLint.VisualStudio.Integration.Service
             do
             {
                 pageIndex++;
-
-                var restQuery = $"{ComponentsAPI}?baseComponentKey={projectKey}&p={pageIndex}&ps={maxPageSize}&qualifiers={subProjectsQualifier}";
+                var restQuery = $"{ComponentsAPI}?baseComponentKey={projectKey}&p={pageIndex}&ps={maxPageSize}&qualifiers={subProjectsQualifier}&strategy={strategy}";
                 HttpResponseMessage downloadComponentsResponse = await InvokeGetRequest(configuredClient, restQuery, token);
                 tree = await ProcessJsonResponse<ComponentTree>(downloadComponentsResponse, token);
 
                 allProjectComponents.AddRange(tree.Components);
-            } while (tree.Paging.PageIndex < tree.Paging.PageCount);
+            } while (tree.Paging.PageIndex * tree.Paging.PageSize < tree.Paging.TotalCount);
 
             return allProjectComponents;
         }
