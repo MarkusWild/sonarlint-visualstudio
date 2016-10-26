@@ -102,5 +102,11 @@ namespace SonarLint.VisualStudio.Integration
         /// </summary>
         /// <returns>Project kinds GUIDs for the project</returns>
         IEnumerable<Guid> GetAggregateProjectKinds(IVsHierarchy hierarchy);
+
+        /// <summary>
+        /// Returns all project GUIDs.
+        /// </summary>
+        /// <returns>All ProjectGuid for the current solution</returns>
+        IEnumerable<Guid> GetAggregateProjectGuids();
     }
 }

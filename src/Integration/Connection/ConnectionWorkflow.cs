@@ -94,7 +94,7 @@ namespace SonarLint.VisualStudio.Integration.Connection
 
         private void OnProjectsChanged(ConnectionInformation connection, ProjectInformation[] projects)
         {
-            this.host.VisualStateManager.SetProjects(connection, projects);
+            this.host.VisualStateManager.SetProjects(this.projectSystem, connection, projects);
         }
 
         #endregion

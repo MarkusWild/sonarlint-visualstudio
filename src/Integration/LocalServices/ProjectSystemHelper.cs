@@ -51,6 +51,7 @@ namespace SonarLint.VisualStudio.Integration
         public IEnumerable<Project> GetSolutionProjects()
         {
             IVsSolution solution = this.serviceProvider.GetService<SVsSolution, IVsSolution>();
+
             Debug.Assert(solution != null, "Cannot find SVsSolution");
 
             foreach (var hierarchy in EnumerateProjects(solution))
@@ -368,6 +369,22 @@ namespace SonarLint.VisualStudio.Integration
                             yield return guid;
                         }
                     }
+                }
+            }
+        }
+
+        public IEnumerable<Guid> GetAggregateProjectGuids()
+        {
+            IVsSolution solution = this.serviceProvider.GetService<SVsSolution, IVsSolution>();
+
+            Debug.Assert(solution != null, "Cannot find SVsSolution");
+
+            foreach (var hierarchy in EnumerateProjects(solution))
+            {
+                Guid projectGuid;
+                if (solution.GetGuidOfProject(hierarchy, out projectGuid) == VSConstants.S_OK)
+                {
+                    yield return projectGuid;
                 }
             }
         }

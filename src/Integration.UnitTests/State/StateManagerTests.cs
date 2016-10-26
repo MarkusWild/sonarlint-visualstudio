@@ -54,7 +54,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             // Act + Verify
             // Case 1 - not connected to server (indicated by null)
             section.UserNotifications.ShowNotificationError("message", NotificationIds.FailedToFindBoundProjectKeyId, null);
-            testSubject.SetProjects(connection1, null);
+            testSubject.SetProjects(null, connection1, null);
 
             notifications.AssertNoNotification(NotificationIds.FailedToFindBoundProjectKeyId);
             VerifyConnectSectionViewModelIsNotConnected(section.ViewModel, connection1);
@@ -63,7 +63,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
 
             // Case 2 - connection1, empty project collection
             section.UserNotifications.ShowNotificationError("message", NotificationIds.FailedToFindBoundProjectKeyId, null);
-            testSubject.SetProjects(connection1, new ProjectInformation[0]);
+            testSubject.SetProjects(null, connection1, new ProjectInformation[0]);
 
             notifications.AssertNoNotification(NotificationIds.FailedToFindBoundProjectKeyId);
             serverVM = VerifyConnectSectionViewModelIsConnectedAndHasNoProjects(section.ViewModel, connection1);
@@ -74,7 +74,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
 
             // Case 3 - connection1, non-empty project collection
             section.UserNotifications.ShowNotificationError("message", NotificationIds.FailedToFindBoundProjectKeyId, null);
-            testSubject.SetProjects(connection1, projects);
+            testSubject.SetProjects(null, connection1, projects);
 
             notifications.AssertNoNotification(NotificationIds.FailedToFindBoundProjectKeyId);
             serverVM = VerifyConnectSectionViewModelIsConnectedAndHasProjects(section.ViewModel, connection1, projects);
@@ -84,9 +84,9 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             Assert.IsTrue(serverVM.ShowAllProjects, "Expected show all projects to be true when adding new projects");
 
             // Case 4 - connection2, change projects
-            testSubject.SetProjects(connection1, projects);
+            testSubject.SetProjects(null, connection1, projects);
             section.UserNotifications.ShowNotificationError("message", NotificationIds.FailedToFindBoundProjectKeyId, null);
-            testSubject.SetProjects(connection2, projects);
+            testSubject.SetProjects(null, connection2, projects);
 
             notifications.AssertNoNotification(NotificationIds.FailedToFindBoundProjectKeyId);
             serverVM = VerifyConnectSectionViewModelIsConnectedAndHasProjects(section.ViewModel, connection1, projects);
@@ -98,8 +98,8 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
 
             // Case 5 - connection1 & connection2, once detached (connected or not), are reset, changes still being tracked
             host.ClearActiveSection();
-            testSubject.SetProjects(connection1, projects);
-            testSubject.SetProjects(connection2, projects);
+            testSubject.SetProjects(null, connection1, projects);
+            testSubject.SetProjects(null, connection2, projects);
             // Act
             section.UserNotifications.ShowNotificationError("message", NotificationIds.FailedToFindBoundProjectKeyId, null);
             host.SetActiveSection(section);
@@ -121,7 +121,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             StateManager testSubject = this.CreateTestSubject(host, section);
             var connection1 = new ConnectionInformation(new Uri("http://127.0.0.1"));
             var projects = new ProjectInformation[] { new ProjectInformation(), new ProjectInformation() };
-            testSubject.SetProjects(connection1, projects);
+            testSubject.SetProjects(null, connection1, projects);
             ServerViewModel serverVM = testSubject.ManagedState.ConnectedServers.Single();
 
             // Case 1: has active section
@@ -156,7 +156,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             StateManager testSubject = this.CreateTestSubject(host, section);
             var connection1 = new ConnectionInformation(new Uri("http://127.0.0.1"));
             var projects = new ProjectInformation[] { new ProjectInformation(), new ProjectInformation() };
-            testSubject.SetProjects(connection1, projects);
+            testSubject.SetProjects(null, connection1, projects);
             ServerViewModel serverVM = testSubject.ManagedState.ConnectedServers.Single();
             host.SetActiveSection(section);
             testSubject.SyncCommandFromActiveSection();
@@ -183,7 +183,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             StateManager testSubject = this.CreateTestSubject(host, section);
             var connection1 = new ConnectionInformation(new Uri("http://127.0.0.1"));
             var projects = new ProjectInformation[] { new ProjectInformation() };
-            testSubject.SetProjects(connection1, projects);
+            testSubject.SetProjects(null, connection1, projects);
             ProjectViewModel projectVM = testSubject.ManagedState.ConnectedServers.Single().Projects.Single();
             host.SetActiveSection(section);
             testSubject.SyncCommandFromActiveSection();
@@ -242,7 +242,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             section.UserNotifications.ShowNotificationError("message", NotificationIds.FailedToFindBoundProjectKeyId, null);
             var conn = new ConnectionInformation(new Uri("http://xyz"));
             var projects = new[] { new ProjectInformation(), new ProjectInformation() };
-            testSubject.SetProjects(conn, projects);
+            testSubject.SetProjects(null, conn, projects);
             TransferableVisualState state = testSubject.ManagedState;
             bool hasBoundProjectChanged = false;
             state.PropertyChanged += (o, e) =>
@@ -349,13 +349,13 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             Assert.IsFalse(testSubject.IsConnected);
 
             // Act (connect)
-            testSubject.SetProjects(new ConnectionInformation(new Uri("http://qwerty")), new ProjectInformation[0]);
+            testSubject.SetProjects(null, new ConnectionInformation(new Uri("http://qwerty")), new ProjectInformation[0]);
 
             // Verify
             Assert.IsTrue(testSubject.IsConnected);
 
             // Act (disconnect)
-            testSubject.SetProjects(new ConnectionInformation(new Uri("http://qwerty")), null);
+            testSubject.SetProjects(null, new ConnectionInformation(new Uri("http://qwerty")), null);
 
             // Verify
             Assert.IsFalse(testSubject.IsConnected);
@@ -374,20 +374,20 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             Assert.IsFalse(testSubject.GetConnectedServers().Any());
 
             // Act (connect)
-            testSubject.SetProjects(connection1, new ProjectInformation[0]);
+            testSubject.SetProjects(null, connection1, new ProjectInformation[0]);
 
             // Verify
             CollectionAssert.AreEquivalent(new[] { connection1 } , testSubject.GetConnectedServers().ToArray());
 
             // Act (connect another one)
-            testSubject.SetProjects(connection2, new ProjectInformation[0]);
+            testSubject.SetProjects(null, connection2, new ProjectInformation[0]);
 
             // Verify
             CollectionAssert.AreEquivalent(new[] { connection1, connection2 }, testSubject.GetConnectedServers().ToArray());
 
             // Act (disconnect)
-            testSubject.SetProjects(connection1, null);
-            testSubject.SetProjects(connection2, null);
+            testSubject.SetProjects(null, connection1, null);
+            testSubject.SetProjects(null, connection2, null);
 
             // Verify
             Assert.IsFalse(testSubject.GetConnectedServers().Any());
@@ -402,7 +402,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             ConfigurableHost host = new ConfigurableHost();
             StateManager testSubject = this.CreateTestSubject(host);
             var connection1 = new ConnectionInformation(new Uri("http://conn1"));
-            testSubject.SetProjects(connection1, new ProjectInformation[0]);
+            testSubject.SetProjects(null, connection1, new ProjectInformation[0]);
 
             // Act
             testSubject.Dispose();
@@ -422,8 +422,8 @@ namespace SonarLint.VisualStudio.Integration.UnitTests.State
             var project1 = new ProjectInformation { Key = SharedKey };
             var connection2 = new ConnectionInformation(new Uri("http://conn2"));
             var project2 = new ProjectInformation { Key = SharedKey };
-            testSubject.SetProjects(connection1, new ProjectInformation[] { project1 });
-            testSubject.SetProjects(connection2, new ProjectInformation[] { project2 });
+            testSubject.SetProjects(null, connection1, new ProjectInformation[] { project1 });
+            testSubject.SetProjects(null, connection2, new ProjectInformation[] { project2 });
 
             // Case 1: Exists
             // Act+Verify

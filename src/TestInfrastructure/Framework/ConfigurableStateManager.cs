@@ -66,7 +66,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests
             this.BindingStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetProjects(ConnectionInformation connection, IEnumerable<ProjectInformation> projects)
+        public void SetProjects(IProjectSystemHelper projectSystem, ConnectionInformation connection, IEnumerable<ProjectInformation> projects)
         {
             this.VerifyActiveSection();
             this.SetProjectsAction?.Invoke(connection, projects);
@@ -152,6 +152,7 @@ namespace SonarLint.VisualStudio.Integration.UnitTests
             this.IsBusy = value;
             this.IsBusyChanged?.Invoke(this, value);
         }
+
         #endregion
     }
 }

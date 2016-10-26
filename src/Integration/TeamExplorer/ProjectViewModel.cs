@@ -9,6 +9,8 @@ using SonarLint.VisualStudio.Integration.Resources;
 using SonarLint.VisualStudio.Integration.Service;
 using SonarLint.VisualStudio.Integration.WPF;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace SonarLint.VisualStudio.Integration.TeamExplorer

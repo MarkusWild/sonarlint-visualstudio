@@ -166,7 +166,10 @@
     <Compile Include="RuleSetHelper.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="LocalServices\ProjectSystemFilter.cs" />
+    <Compile Include="Service\DataModel\ComponentInformation.cs" />
+    <Compile Include="Service\DataModel\ComponentTree.cs" />
     <Compile Include="Service\DataModel\MinimumSupportedServerPlugin.cs" />
+    <Compile Include="Service\DataModel\Paging.cs" />
     <Compile Include="Service\DataModel\QualityProfileChangeLog.cs" />
     <Compile Include="Service\DataModel\QualityProfileChangeLogEvent.cs" />
     <Compile Include="Service\DataModel\ServerPlugin.cs" />
@@ -247,6 +250,7 @@
     <Compile Include="WPF\RelayCommand.cs" />
     <Compile Include="WPF\RelayCommand`1.cs" />
     <Compile Include="WPF\RelayCommandBase.cs" />
+    <Compile Include="WPF\TreeViewHelper.cs" />
     <Compile Include="WPF\ViewModelBase.cs" />
     <Compile Include="InternalsVisibleTo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -278,7 +278,7 @@ namespace SonarLint.VisualStudio.Integration.TeamExplorer
 
             TelemetryLoggerAccessor.GetLogger(this.ServiceProvider)?.ReportEvent(TelemetryEvent.DisconnectCommandCommandCalled);
             // Disconnect all (all being one)
-            this.Host.VisualStateManager.GetConnectedServers().ToList().ForEach(c => this.Host.VisualStateManager.SetProjects(c, null));
+            this.Host.VisualStateManager.GetConnectedServers().ToList().ForEach(c => this.Host.VisualStateManager.SetProjects(null, c, null));
         }
 
         private bool CanToggleShowAllProjects(ServerViewModel server)

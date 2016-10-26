@@ -32,12 +32,13 @@ namespace SonarLint.VisualStudio.Integration.Service
     [Export(typeof(SonarQubeServiceWrapper)), PartCreationPolicy(CreationPolicy.Shared)]
     internal class SonarQubeServiceWrapper : ISonarQubeServiceWrapper
     {
-        public const string ProjectsAPI = "api/projects/index";                 // Since 2.10
-        public const string ServerPluginsInstalledAPI = "api/updatecenter/installed_plugins"; // Since 2.10; internal
-        public const string QualityProfileListAPI = "api/profiles/list";                  // Since 3.3; deprecated in 5.2
-        public const string QualityProfileExportAPI = "profiles/export";                    // Since ???; internal
-        public const string PropertiesAPI = "api/properties/";                    // Since 2.6
-        public const string QualityProfileChangeLogAPI = "api/qualityprofiles/changelog";      // Since 5.2
+        public const string ProjectsAPI = "api/projects/index";                                                 // Since 2.10
+        public const string ServerPluginsInstalledAPI = "api/updatecenter/installed_plugins";                   // Since 2.10; internal
+        public const string QualityProfileListAPI = "api/profiles/list";                                        // Since 3.3; deprecated in 5.2
+        public const string QualityProfileExportAPI = "profiles/export";                                        // Since ???; internal
+        public const string PropertiesAPI = "api/properties/";                                                  // Since 2.6
+        public const string QualityProfileChangeLogAPI = "api/qualityprofiles/changelog";                       // Since 5.2
+        public const string ComponentsAPI = "api/components/tree";  // Since 5.4
 
         public const string ProjectDashboardRelativeUrl = "dashboard/index/{0}";
 
@@ -88,7 +89,17 @@ namespace SonarLint.VisualStudio.Integration.Service
             serverProjects = this.SafeUseHttpClient<ProjectInformation[]>(connectionInformation,
                 client => this.DownloadProjects(client, token));
 
-            return serverProjects != null;
+            if (serverProjects == null)
+            {
+                return false;
+            }
+
+            foreach (var project in serverProjects)
+            {
+                project.Components = this.SafeUseHttpClient(connectionInformation, client => this.DownloadProjectComponents(client, token, project.Key));
+            }
+
+            return true;
         }
 
         public bool TryGetProperties(ConnectionInformation connectionInformation, CancellationToken token, out ServerProperty[] properties)
@@ -212,6 +223,32 @@ namespace SonarLint.VisualStudio.Integration.Service
         {
             HttpResponseMessage downloadProjectsResponse = await InvokeGetRequest(configuredClient, ProjectsAPI, token);
             return await ProcessJsonResponse<ProjectInformation[]>(downloadProjectsResponse, token);
+        }
+
+        #endregion
+
+        #region Download project components
+
+        private async Task<IEnumerable<ComponentInformation>> DownloadProjectComponents(HttpClient configuredClient, CancellationToken token, string projectKey)
+        {
+            const int maxPageSize = 500;
+            const string subProjectsQualifier = "BRC";
+
+            var allProjectComponents = new List<ComponentInformation>();
+            var pageIndex = 0;
+            ComponentTree tree;
+            do
+            {
+                pageIndex++;
+
+                var restQuery = $"{ComponentsAPI}?baseComponentKey={projectKey}&p={pageIndex}&ps={maxPageSize}&qualifiers={subProjectsQualifier}";
+                HttpResponseMessage downloadComponentsResponse = await InvokeGetRequest(configuredClient, restQuery, token);
+                tree = await ProcessJsonResponse<ComponentTree>(downloadComponentsResponse, token);
+
+                allProjectComponents.AddRange(tree.Components);
+            } while (tree.Paging.PageIndex < tree.Paging.PageCount);
+
+            return allProjectComponents;
         }
 
         #endregion

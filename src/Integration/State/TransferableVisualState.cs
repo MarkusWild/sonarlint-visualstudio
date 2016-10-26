@@ -18,6 +18,7 @@ namespace SonarLint.VisualStudio.Integration.State
         private readonly ObservableCollection<ServerViewModel> connectedServers = new ObservableCollection<ServerViewModel>();
         private ProjectViewModel boundProject;
         private bool isBusy;
+        private ProjectViewModel selectedProject;
 
         public ObservableCollection<ServerViewModel> ConnectedServers
         {
@@ -48,6 +49,20 @@ namespace SonarLint.VisualStudio.Integration.State
             {
                 Debug.Assert(ThreadHelper.CheckAccess(), $"{nameof(IsBusy)} should only be set from the UI thread");
                 this.SetAndRaisePropertyChanged(ref this.isBusy, value);
+            }
+        }
+
+        public ProjectViewModel SelectedProject
+        {
+            get
+            {
+                Debug.Assert(ThreadHelper.CheckAccess(), $"{nameof(SelectedProject)} should only be accessed from the UI thread");
+                return this.selectedProject;
+            }
+            set
+            {
+                Debug.Assert(ThreadHelper.CheckAccess(), $"{nameof(SelectedProject)} should only be set from the UI thread");
+                this.SetAndRaisePropertyChanged(ref this.selectedProject, value);
             }
         }
 

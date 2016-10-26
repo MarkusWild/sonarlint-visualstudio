@@ -98,15 +98,15 @@ namespace SonarLint.VisualStudio.Integration.State
 
         public string BoundProjectKey { get; set; }
 
-        public void SetProjects(ConnectionInformation connection, IEnumerable<ProjectInformation> projects)
+        public void SetProjects(IProjectSystemHelper projectSystem, ConnectionInformation connection, IEnumerable<ProjectInformation> projects)
         {
             if (this.Host.UIDispatcher.CheckAccess())
             {
-                this.SetProjectsUIThread(connection, projects);
+                this.SetProjectsUIThread(projectSystem, connection, projects);
             }
             else
             {
-                this.Host.UIDispatcher.BeginInvoke(new Action(() => this.SetProjectsUIThread(connection, projects)));
+                this.Host.UIDispatcher.BeginInvoke(new Action(() => this.SetProjectsUIThread(projectSystem, connection, projects)));
             }
         }
 
@@ -159,7 +159,7 @@ namespace SonarLint.VisualStudio.Integration.State
             }
         }
 
-        private void SetProjectsUIThread(ConnectionInformation connection, IEnumerable<ProjectInformation> projects)
+        private void SetProjectsUIThread(IProjectSystemHelper projectSystem, ConnectionInformation connection, IEnumerable<ProjectInformation> projects)
         {
             Debug.Assert(connection != null);
             this.ClearBindingErrorNotifications();
@@ -193,6 +193,7 @@ namespace SonarLint.VisualStudio.Integration.State
                 Debug.Assert(serverViewModel.ShowAllProjects, "ShowAllProjects should have been set");
                 this.SetServerProjectsVMCommands(serverViewModel);
                 this.RestoreBoundProject(serverViewModel);
+                this.SelectSonarQubeProjectWithMoreMatches(projectSystem, serverViewModel);
             }
         }
 
@@ -228,6 +229,37 @@ namespace SonarLint.VisualStudio.Integration.State
             {
                 this.SetBoundProject(boundProject);
             }
+        }
+
+        private void SelectSonarQubeProjectWithMoreMatches(IProjectSystemHelper projectSystem, ServerViewModel serverViewModel)
+        {
+            if (this.BoundProjectKey != null)
+            {
+                // Project is bound, project selection is useless
+                return;
+            }
+
+            if (projectSystem == null)
+            {
+                return;
+            }
+
+            var allSolutionProjectGuids = projectSystem.GetAggregateProjectGuids().Select(guid => guid.ToString()).ToList();
+
+            // First, we create a tuple with the project and the count of matching GUIDs.
+            var projecAndMatchCountTuples = serverViewModel.Projects.Select(p => new { Project = p, MatchCount = GetCountOfMatchingGuids(p, allSolutionProjectGuids) }).ToList();
+
+            if (projecAndMatchCountTuples.Any())
+            {
+                // Then, we fold them to obtain the tuple with the highest count, on which we take the project.
+                this.ManagedState.SelectedProject = projecAndMatchCountTuples.Aggregate((left, right) => left.MatchCount > right.MatchCount ? left : right)
+                                                                             .Project;
+            }
+        }
+
+        private int GetCountOfMatchingGuids(ProjectViewModel project, List<string> solutionProjectGuids)
+        {
+            return project.ProjectInformation.Components.Select(c => c.Key).Distinct().Intersect(solutionProjectGuids).Count();
         }
 
         private void SetServerVMCommands(ServerViewModel serverVM)

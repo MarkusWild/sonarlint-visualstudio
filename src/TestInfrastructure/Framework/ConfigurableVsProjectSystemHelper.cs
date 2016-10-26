@@ -146,6 +146,11 @@ namespace SonarLint.VisualStudio.Integration.UnitTests
             return dteProject.GetAggregateProjectTypeGuids();
         }
 
+        public IEnumerable<Guid> GetAggregateProjectGuids()
+        {
+            return this.Projects?.OfType<ProjectMock>()?.Select(p => p.ProjectGuid) ?? Enumerable.Empty<Guid>();
+        }
+
         #endregion
 
         #region Test helpers

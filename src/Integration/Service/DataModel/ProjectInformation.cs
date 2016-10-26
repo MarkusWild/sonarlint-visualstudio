@@ -7,6 +7,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace SonarLint.VisualStudio.Integration.Service
@@ -22,5 +23,8 @@ namespace SonarLint.VisualStudio.Integration.Service
 
         [JsonProperty("nm")]
         public string Name { get; set; }
+
+        [JsonIgnore]
+        public IEnumerable<ComponentInformation> Components { get; set; }
     }
 }

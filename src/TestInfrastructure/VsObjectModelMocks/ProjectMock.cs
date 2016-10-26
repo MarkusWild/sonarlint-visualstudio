@@ -52,6 +52,8 @@ namespace SonarLint.VisualStudio.Integration.UnitTests
             set;
         }
 
+        public Guid ProjectGuid { get; set; }
+
         public PropertiesMock Properties
         {
             get { return this.properties; }
